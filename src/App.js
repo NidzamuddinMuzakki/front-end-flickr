@@ -17,16 +17,26 @@ function App() {
     event,
     newPage,
   ) => {
-    setPage(newPage);
+    if(!loading){
+      
+      setPage(newPage);
+    }
   };
 
   const handleChangeRowsPerPage = (event) => {
-    setPerPage(parseInt(event.target.value, 10));
-    setPage(0);
+    if(!loading){
+      setPerPage(parseInt(event.target.value, 10));
+      setPage(0);
+
+    }
   };
   const handleSearch = (e)=>{
+    
     setSearch(e.target.value)
   }
+  useEffect(()=>{
+    setPage(0)
+  },[search])
   useEffect(()=>{
     let unmounted = false;
     let source = axios.CancelToken.source();
