@@ -16,7 +16,7 @@ export default function TitlebarImageList({itemData, search, handleSearch, loadi
     <ImageList sx={{ width: '100vw - 10px', height: '100vh - 100px' }} cols={3} >
       
       {loading?<span>loading...</span>:itemData.map((item) => (
-        <ImageListItem key={item.title}>
+        <ImageListItem key={item.title+item.farm+item.server}>
           <img
             src={`https://farm${item.farm}.staticflickr.com/${item.server}/${item.id}_${item.secret}.jpg`}
             srcSet={`https://farm${item.farm}.staticflickr.com/${item.server}/${item.id}_${item.secret}.jpg`}

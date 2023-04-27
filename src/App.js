@@ -5,28 +5,32 @@ import axios from 'axios'
 import Pagination from './components/pagination'
 import CustomImageList from './components/image-list'
 import { Input } from '@mui/material';
+import {useSelector,useDispatch} from 'react-redux';
+import { ChangeLoading, ChangePage, RowPerPage } from './redux/action';
 function App() {
+  const dispatch = useDispatch();
   const [itemData, setItemData] = useState([])
   const [search, setSearch] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [page, setPage] = React.useState(0);
-  const [perpage, setPerPage] = React.useState(10);
+  const loading = useSelector(state=> state.Loading)
+ const page = useSelector(state=>state?.Page)
+  const perpage  = useSelector(state=>state.RowPerPage)
   const [total, setTotal] = useState(0)
   const [timeout] = useState(10000)
+
   const handleChangePage = (
     event,
     newPage,
   ) => {
     if(!loading){
       
-      setPage(newPage);
+      dispatch(ChangePage(newPage));
     }
   };
 
   const handleChangeRowsPerPage = (event) => {
     if(!loading){
-      setPerPage(parseInt(event.target.value, 10));
-      setPage(0);
+      dispatch(RowPerPage(parseInt(event.target.value, 10)));
+      dispatch(ChangePage(0));
 
     }
   };
@@ -35,12 +39,12 @@ function App() {
     setSearch(e.target.value)
   }
   useEffect(()=>{
-    setPage(0)
-  },[search])
+    dispatch(ChangePage(0))
+  },[search, dispatch])
   useEffect(()=>{
     let unmounted = false;
     let source = axios.CancelToken.source();
-    setLoading(true)
+    dispatch(ChangeLoading(true))
     setItemData([])
     let url =''
     if(search){
@@ -58,13 +62,13 @@ function App() {
         }
       
         setTotal(res.data.photos.total)
-        setLoading(false)
+        dispatch(ChangeLoading(false))
     }
       
     }).catch(e=>{
       if (!unmounted) {
        
-        setLoading(false);
+        dispatch(ChangeLoading(false));
         if (axios.isCancel(e)) {
             console.log(`request cancelled:${e.message}`);
         } else {
@@ -76,10 +80,10 @@ function App() {
     })
     return function () {
       unmounted = true;
-      setLoading(false)
+      dispatch(ChangeLoading(false))
       source.cancel("Cancelling in cleanup");
   };
-  },[search, page, perpage, timeout])
+  },[search, page, perpage, timeout, dispatch])
   return (
      <div className="App">
        <div style={{position:'sticky', top:0, zIndex:100, display:'flex', justifyContent:'space-between'}}>
